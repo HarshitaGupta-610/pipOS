@@ -369,12 +369,60 @@
     var W = 300, H = 420, BH = 28;
     var PAL = ['#ff9fb4', '#ffd27a', '#9fd8c4', '#9ab8f0', '#d3a8f2', '#ffb08a'];
     var LET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+   var dpr = Math.min((window.devicePixelRatio || 1) * 1.15, 3);
     cv.width = W * dpr;
     cv.height = H * dpr;
 
     var st, raf = 0, visible = false, last = 0;
-    var best = parseInt(store.get('best', '0'), 10) || 0;
+       var THEMES = {
+      candy: { pal: PAL, line: '#5c4033', bg: null, floor: 'rgba(92,64,51,.18)', dark: false },
+      midnight: { pal: ['#7c6cff', '#3ec9ff', '#ff5fc8', '#4dffb0', '#ffd35c', '#ff7a5c'], line: '#140e24', bg: '#1b1430', floor: 'rgba(255,255,255,.14)', dark: true }
+    };
+    var MODES = {
+      easy: { start: 200, base: 90, step: 5, max: 240, hint: 'Easy: wide first block, slow and gentle.' },
+      normal: { start: 160, base: 120, step: 8, max: 340, hint: 'Normal: the classic stack.' },
+      hard: { start: 110, base: 160, step: 12, max: 430, hint: 'Hard: narrow first block, fast and getting faster.' }
+    };
+    function valid(map, key, fallback) { return map.hasOwnProperty(key) ? key : fallback; }
+    var modeKey = valid(MODES, store.get('blockMode', 'normal'), 'normal');
+    var themeKey = valid(THEMES, store.get('blockTheme', 'candy'), 'candy');
+    var mode = MODES[modeKey], theme = THEMES[themeKey];
+    function bestKey() { return modeKey === 'normal' ? 'best' : 'best-' + modeKey; }
+    var best = parseInt(store.get(bestKey(), '0'), 10) || 0;
+
+    var modeBtns = $$('[data-block-mode]'), themeBtns = $$('[data-block-theme]'), hintEl = $('#blockModeHint');
+    function syncUI() {
+      modeBtns.forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-block-mode') === modeKey));
+      });
+      themeBtns.forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-block-theme') === themeKey));
+      });
+      if (hintEl) hintEl.textContent = mode.hint;
+    }
+    modeBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var k = b.getAttribute('data-block-mode');
+        if (!MODES.hasOwnProperty(k) || k === modeKey) return;
+        modeKey = k;
+        mode = MODES[k];
+        store.set('blockMode', k);
+        best = parseInt(store.get(bestKey(), '0'), 10) || 0;
+        syncUI();
+        reset();
+      });
+    });
+    themeBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var k = b.getAttribute('data-block-theme');
+        if (!THEMES.hasOwnProperty(k) || k === themeKey) return;
+        themeKey = k;
+        theme = THEMES[k];
+        store.set('blockTheme', k);
+        syncUI();
+      });
+    });
+    syncUI();
 
     function rr(x, y, w, h, rad) {
       rad = Math.min(rad, w / 2, h / 2);
@@ -389,7 +437,7 @@
     function levelY(i) { return H - 10 - (i + 1) * BH; } // world y of block i's top
 
     function reset() {
-      st = { stack: [{ x: 70, w: 160, i: 0 }], cur: null, chips: [], score: 0, over: false, cam: 0 };
+      st = { stack: [{ x: (W - mode.start) / 2, w: mode.start, i: 0 }], cur: null, chips: [], score: 0, over: false, cam: 0 };
       spawn();
       hud();
       if (!raf && visible) loop();
@@ -411,7 +459,7 @@
         st.chips.push({ x: c.x, w: c.w, y: levelY(c.i), vy: 0, i: c.i });
         st.cur = null;
         st.over = true;
-        if (st.score > best) { best = st.score; store.set('best', best); }
+        if (st.score > best) { best = st.score; store.set(bestKey(), best); }
         hud();
         toast('Wobbly! Your tower is ' + st.score + ' blocks tall.');
         if (audio.isOn()) audio.note(196, { dur: 0.6, gain: 0.2, type: 'triangle', bell: false });
@@ -432,14 +480,14 @@
         audio.note(f, { dur: perfect ? 1.4 : 0.8, gain: perfect ? 0.22 : 0.15 });
         if (perfect) audio.note(f * 1.5, { dur: 1.2, gain: 0.1, when: 0.07 });
       }
-      if (st.score > best) { best = st.score; store.set('best', best); }
+      if (st.score > best) { best = st.score; store.set(bestKey(), best); }
       hud();
       spawn();
     }
 
     function update(dt) {
       if (!st.over && st.cur) {
-        var c = st.cur, speed = Math.min(120 + st.score * 8, 340);
+        var c = st.cur, speed = Math.min(mode.base + st.score * mode.step, mode.max);
         c.x += c.dir * speed * dt;
         if (c.x < 0) { c.x = 0; c.dir = 1; }
         if (c.x + c.w > W) { c.x = W - c.w; c.dir = -1; }
@@ -451,19 +499,19 @@
     }
 
     function block(b, y, idx, alpha) {
-      var col = PAL[idx % PAL.length];
+var col = theme.pal[idx % theme.pal.length];
       ctx.globalAlpha = alpha || 1;
       rr(b.x, y, b.w, BH - 2, 7);
       ctx.fillStyle = col;
       ctx.fill();
       ctx.lineWidth = 2.5;
-      ctx.strokeStyle = '#5c4033';
+      ctx.strokeStyle = theme.line;
       ctx.stroke();
       ctx.fillStyle = 'rgba(255,255,255,.35)';
       rr(b.x + 4, y + 3, b.w - 8, 6, 3);
       ctx.fill();
       if (b.w > 34) {
-        ctx.fillStyle = '#5c4033';
+       ctx.fillStyle = theme.line;
         ctx.font = '600 15px Fredoka, "Trebuchet MS", system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -475,8 +523,9 @@
     function draw() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, W, H);
+          if (theme.bg) { ctx.fillStyle = theme.bg; ctx.fillRect(0, 0, W, H); }
       // floor
-      ctx.fillStyle = 'rgba(92,64,51,.18)';
+     ctx.fillStyle = theme.floor;
       ctx.fillRect(0, H - 10 + st.cam, W, 10 + 400);
       st.stack.forEach(function (b, i) { block(b, levelY(i) + st.cam, i); });
       st.chips.forEach(function (p) { block(p, p.y + st.cam, p.i, 0.9); });
@@ -494,7 +543,7 @@
           ctx.fillText('Tap to build again', W / 2, H / 2 + 20);
         } else {
           var isNight = document.documentElement.getAttribute('data-theme') === 'night';
-          ctx.fillStyle = isNight ? '#ffe9d2' : '#5c4033';
+          ctx.fillStyle = (isNight || theme.dark) ? '#ffe9d2' : '#5c4033';
           ctx.font = '500 15px Fredoka, system-ui, sans-serif';
           ctx.fillText('Tap to drop the block', W / 2, 40);
         }

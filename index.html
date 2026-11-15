@@ -342,6 +342,20 @@
           <div class="win-bar"><h3 class="win-title" id="blocksTitle">rattle-and-blocks.exe</h3></div>
           <div class="win-body">
             <p>Stack the blocks as high as Pip's bedtime. Tap, click or press Space to drop.</p>
+                        <div class="block-options">
+              <div class="opt-group" role="group" aria-label="Difficulty">
+                <span class="opt-label" aria-hidden="true">Mode</span>
+                <button class="btn opt-btn" type="button" data-block-mode="easy" aria-pressed="false">Easy</button>
+                <button class="btn opt-btn" type="button" data-block-mode="normal" aria-pressed="true">Normal</button>
+                <button class="btn opt-btn" type="button" data-block-mode="hard" aria-pressed="false">Hard</button>
+              </div>
+              <div class="opt-group" role="group" aria-label="Block theme">
+                <span class="opt-label" aria-hidden="true">Theme</span>
+                <button class="btn opt-btn" type="button" data-block-theme="candy" aria-pressed="true">Candy</button>
+                <button class="btn opt-btn" type="button" data-block-theme="midnight" aria-pressed="false">Midnight</button>
+              </div>
+              <p class="mode-hint" id="blockModeHint" aria-live="polite"></p>
+            </div>
             <canvas id="blockCanvas" class="block-canvas" tabindex="0" aria-label="Block stacking game. Press Space or Enter to drop the moving block."></canvas>
             <div class="row row-between">
               <button class="btn btn-primary" id="blockDrop" type="button" data-silent>Drop block</button>
