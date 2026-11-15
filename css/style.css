@@ -94,6 +94,16 @@
 [data-theme="contrast"] .tb-btn { border-width: 4px; }
 [data-theme="contrast"] .win-bar,
 [data-theme="contrast"] .taskbar { border-bottom-width: 4px; }
+/* Quiet mode: stops marquee, Pip's bobbing and waving, twinkles and other motion */
+[data-quiet="on"] *,
+[data-quiet="on"] *::before,
+[data-quiet="on"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+#quietBtn[aria-pressed="true"] { background: var(--butter); }
+[data-quiet="on"] .sparkle { display: none; }
 
 /* ==========================================================================
    02. Base & Reset

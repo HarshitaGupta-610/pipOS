@@ -63,6 +63,29 @@
       paintContrast();
     });
   }
+    /* ---------- quiet mode ---------- */
+  function initQuiet() {
+    var html = document.documentElement, btn = $('#quietBtn');
+    var quiet = store.get('quiet', '') === 'on';
+    function apply() {
+      if (quiet) html.setAttribute('data-quiet', 'on');
+      else html.removeAttribute('data-quiet');
+      if (btn) {
+        btn.setAttribute('aria-pressed', quiet ? 'true' : 'false');
+        btn.setAttribute('aria-label', quiet ? 'Quiet mode on, turn it off' : 'Quiet mode off, turn it on');
+      }
+      if (quiet && audio.isOn()) audio.toggle();
+    }
+    apply();
+    audio.onChange(function () {
+      if (quiet && audio.isOn()) audio.toggle();
+    });
+    if (btn) btn.addEventListener('click', function () {
+      quiet = !quiet;
+      store.set('quiet', quiet ? 'on' : 'off');
+      apply();
+    });
+  }
   /* ---------- sound switch ---------- */
   function initSound() {
     var btn = $('#soundBtn'), label = $('#soundLabel');
@@ -317,6 +340,7 @@
   safe('pip', PIP.pip.init);
   safe('theme', initTheme);
   safe('sound', initSound);
+  safe('quiet', initQuiet);
   safe('clock', initClock);
   safe('foldable', initFoldable);
   safe('shortcuts', initShortcuts);

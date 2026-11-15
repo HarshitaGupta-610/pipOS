@@ -12,10 +12,13 @@
   var GLYPHS = ['✦', '★', '✧', '·'];
   var COLORS = ['#a34063', '#ffb454', '#8b8fd9', '#ff9fc0'];
   var live = 0, lastSpark = 0;
+    function isQuiet() {
+    return document.documentElement.getAttribute('data-quiet') === 'on';
+  }
 
   function initSparkles() {
     document.addEventListener('pointermove', function (e) {
-      if (reduce.matches || e.pointerType === 'touch') return;
+            if (reduce.matches || isQuiet() || e.pointerType === 'touch') return;
       var now = performance.now();
       if (now - lastSpark < 36 || live > 28) return;
       lastSpark = now;
@@ -38,7 +41,7 @@
   var confettiRunning = false;
   function confetti(count) {
     var cv = $('#confetti');
-    if (!cv || confettiRunning || reduce.matches) return;
+        if (!cv || confettiRunning || reduce.matches || isQuiet()) return;
     var ctx = cv.getContext && cv.getContext('2d');
     if (!ctx) return;
     confettiRunning = true;
