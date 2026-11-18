@@ -140,6 +140,60 @@
       apply();
     });
   }
+    /* ---------- share Pip ---------- */
+  function initShare() {
+    var btn = $('#shareBtn');
+    if (!btn) return;
+    var shareData = {
+      title: 'Pip, Junior Dream Engineer',
+      text: 'Come meet Pip, the skull baby who builds dreams at the Midnight Nursery.',
+      url: window.location.href.split('#')[0]
+    };
+
+    // Fallback: copy the link and tell the visitor with a toast
+    function copyLink() {
+      var url = shareData.url;
+      function done() { toast('Link copied. Share Pip with a friend!'); }
+      function manual() { toast('Copy this link to share Pip: ' + url, 6000); }
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(url).then(done, function () { legacyCopy(url) ? done() : manual(); });
+      } else {
+        legacyCopy(url) ? done() : manual();
+      }
+    }
+
+    // Older browsers: copy through a temporary text box
+    function legacyCopy(text) {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      } catch (e) { return false; }
+    }
+
+    btn.addEventListener('click', function () {
+      if (typeof navigator.share === 'function') {
+        var p;
+        try { p = navigator.share(shareData); } catch (e) { copyLink(); return; }
+        if (p && typeof p.catch === 'function') {
+          p.catch(function (err) {
+            // closing the share sheet is not an error
+            if (err && err.name === 'AbortError') return;
+            copyLink();
+          });
+        }
+      } else {
+        copyLink();
+      }
+    });
+  }
   /* ---------- sound switch ---------- */
   function initSound() {
     var btn = $('#soundBtn'), label = $('#soundLabel');
@@ -517,6 +571,7 @@
   safe('pip', PIP.pip.init);
   safe('theme', initTheme);
   safe('sound', initSound);
+    safe('share', initShare);
   safe('quiet', initQuiet);
   safe('clock', initClock);
   safe('foldable', initFoldable);
