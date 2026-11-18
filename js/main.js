@@ -154,7 +154,7 @@
     function copyLink() {
       var url = shareData.url;
       function done() { toast('Link copied. Share Pip with a friend!'); }
-      function manual() { toast('Copy this link to share Pip: ' + url, 6000); }
+      function manual() { toast('Could not copy automatically. Please copy the page address from your browser to share Pip.', 6000); }
       if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
         navigator.clipboard.writeText(url).then(done, function () { legacyCopy(url) ? done() : manual(); });
       } else {
