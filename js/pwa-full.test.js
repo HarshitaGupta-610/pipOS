@@ -70,11 +70,11 @@ describe('PWA 2.0 Offline Sync Queue & Pre-cache', () => {
     assert.strictEqual(pwa.loadQueue().length, 0);
   });
 
-  test('sw.js specifies CACHE_NAME v3 and precaches rattle and stars', () => {
+  test('sw.js specifies CACHE_NAME v4 and precaches rattle and stars', () => {
     const swPath = path.join(__dirname, '..', 'sw.js');
     const swContent = fs.readFileSync(swPath, 'utf8');
 
-    assert.ok(swContent.includes("CACHE_NAME = 'pipos-v3'"), 'Must update cache to v3');
+    assert.ok(swContent.includes("CACHE_NAME = 'pipos-v4'"), 'Must update cache to v4');
     assert.ok(swContent.includes("'js/rattle.js'"), 'Must precache rattle.js');
     assert.ok(swContent.includes("'js/stars.js'"), 'Must precache stars.js');
     assert.ok(swContent.includes("'js/pwa.js'"), 'Must precache pwa.js');
