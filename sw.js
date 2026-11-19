@@ -2,7 +2,7 @@
    Provides offline functionality, pre-caches essential local assets,
    serves cached offline fallbacks, and handles Google Fonts degradation. */
 
-var CACHE_NAME = 'pipos-v3';
+var CACHE_NAME = 'pipos-v4';
 
 var PRECACHE_ASSETS = [
   './',
@@ -46,7 +46,9 @@ var PRECACHE_ASSETS = [
   'assets/icon-192.png',
   'assets/icon-512.png',
   'assets/icon-maskable-512.png',
-  'assets/apple-touch-icon.png'
+  'assets/apple-touch-icon.png',
+  'css/boot.css',
+'js/boot.js',
 ];
 
 var swScope = typeof self !== 'undefined' ? self : (typeof globalThis !== 'undefined' ? globalThis : this);

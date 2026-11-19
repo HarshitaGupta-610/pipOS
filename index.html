@@ -44,12 +44,23 @@
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Fredoka:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/boot.css">
   <script>document.documentElement.classList.add('js');</script>
 </head>
 
 <body>
   <a class="skip" href="#main">Skip to content</a>
-
+<div id="bootScreen" class="boot-screen" aria-hidden="true" role="presentation">
+  <div class="boot-panel">
+    <p class="boot-logo">✦ Pip OS</p>
+    <p class="boot-subtitle">Dream Delivery System</p>
+    <p class="boot-status">Starting Pip OS...</p>
+    <div class="boot-progress">
+      <div class="boot-progress-fill"></div>
+    </div>
+    <p class="boot-hint">Press any key or click to skip</p>
+  </div>
+</div>
   <!-- shared star symbol -->
   <svg width="0" height="0" class="sr-hidden-svg" aria-hidden="true" focusable="false">
     <symbol id="star" viewBox="-10 -10 20 20">
@@ -2108,6 +2119,7 @@
   <script src="js/security.js" defer></script>
   <script src="js/vault.js" defer></script>
   <script src="js/audio.js" defer></script>
+  <script src="js/boot.js" defer></script>
   <script src="js/wall.js" defer></script>
   <script src="js/fx.js" defer></script>
   <script src="js/i18n.js" defer></script>

@@ -1,0 +1,104 @@
+/* Retro Pip OS boot splash */
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--paper, #fff8f1);
+  color: var(--ink, #35243b);
+  font-family: var(--f-ui, sans-serif);
+  opacity: 1;
+  transition: opacity 220ms ease;
+  cursor: pointer;
+}
+
+.boot-screen[hidden] {
+  display: none;
+}
+
+.boot-screen.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-panel {
+  width: min(100%, 420px);
+  padding: 32px 26px;
+  text-align: center;
+  border: 2px solid var(--line, #d8b9c8);
+  border-radius: 16px;
+  background: var(--cream, #fffaf4);
+  box-shadow: 6px 6px 0 var(--shadow, rgba(50, 30, 50, .15));
+}
+
+.boot-logo {
+  font-family: var(--f-head, Georgia, serif);
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 800;
+  color: var(--berry, #a33b70);
+  margin: 0 0 8px;
+}
+
+.boot-subtitle {
+  margin: 0 0 26px;
+  font-size: .9rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.boot-status {
+  margin-bottom: 10px;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.boot-progress {
+  height: 14px;
+  overflow: hidden;
+  border: 2px solid var(--line, #d8b9c8);
+  border-radius: 999px;
+  background: var(--paper, #fff8f1);
+}
+
+.boot-progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--mint, #8bcbb0);
+  animation: pip-boot-load 2s ease-out forwards;
+}
+
+.boot-hint {
+  margin: 18px 0 0;
+  font-size: .75rem;
+  opacity: .7;
+}
+
+[data-theme="night"] .boot-screen {
+  background: #171225;
+  color: #f8eaf2;
+}
+
+[data-theme="night"] .boot-panel {
+  background: #251b35;
+  border-color: #665078;
+}
+
+@keyframes pip-boot-load {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-screen {
+    display: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .boot-progress-fill {
+    animation: none !important;
+  }
+}
